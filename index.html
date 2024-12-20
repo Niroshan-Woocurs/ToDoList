@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+   
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="taskEntry">
+        <h1>To-Do List</h1>
+        <form id="taskForm">
+            <input type="text" id="taskInput" placeholder="Enter a task" required />
+            <input type="date" id="taskDate" required />
+            <button type="button" id="addTaskButton">Add Task</button>
+        </form>
+    </div>
+
+    <div id="taskDisplay">
+        <table>
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Due Date</th>
+                    <th>Completed Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="taskList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const taskInput = document.getElementById('taskInput');
+        const taskDate = document.getElementById('taskDate');
+        const addTaskButton = document.getElementById('addTaskButton');
+        const taskList = document.getElementById('taskList');
+
+        function showPopupMessage(message, icon) {
+            Swal.fire({
+                title: message,
+                icon: icon,
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            const taskDueDate = taskDate.value;
+
+            if (!taskText) {
+                showPopupMessage('Task cannot be empty!', 'error');
+                return;
+            }
+
+            const taskRow = document.createElement('tr');
+            const taskCell = document.createElement('td');
+            const dueDateCell = document.createElement('td');
+            const completedDateCell = document.createElement('td');
+            const actionsCell = document.createElement('td');
+
+            const completeButton = document.createElement('button');
+            completeButton.textContent = 'Complete';
+            completeButton.classList.add('action-button', 'complete-button');
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('action-button', 'delete-button');
+
+            taskCell.textContent = taskText;
+            dueDateCell.textContent = taskDueDate;
+            completedDateCell.textContent = '';
+
+            actionsCell.appendChild(completeButton);
+            actionsCell.appendChild(deleteButton);
+
+            taskRow.appendChild(taskCell);
+            taskRow.appendChild(dueDateCell);
+            taskRow.appendChild(completedDateCell);
+            taskRow.appendChild(actionsCell);
+
+            taskList.appendChild(taskRow);
+
+            taskInput.value = '';
+            taskDate.value = '';
+
+            showPopupMessage('Task added successfully!', 'success');
+
+            completeButton.addEventListener('click', () => {
+                if (!completedDateCell.textContent) {
+                    completedDateCell.textContent = new Date().toLocaleDateString();
+                    taskCell.classList.add('completed');
+                    showPopupMessage('Task marked as complete!', 'success');
+                } else {
+                    completedDateCell.textContent = '';
+                    taskCell.classList.remove('completed');
+                    showPopupMessage('Task unmarked as complete!', 'info');
+                }
+            });
+
+            deleteButton.addEventListener('click', () => {
+                taskList.removeChild(taskRow);
+                showPopupMessage('Task deleted successfully!', 'success');
+            });
+        }
+
+        addTaskButton.addEventListener('click', addTask);
+
+        document.getElementById('taskForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
